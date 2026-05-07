@@ -476,7 +476,8 @@ for d in DATES:
     tr   = total_rev_d[d]
     aov  = round(tr/tc) if tc else 0
     a1t, a1c = att1_daily.get(d, (0,0))
-    a1pct = f"{a1c/a1t*100:.1f}%" if a1t else "—"
+    a1pct  = f"{a1c/a1t*100:.1f}%" if a1t else "—"
+    totpct = f"{tc/a1t*100:.1f}%"  if a1t else "—"
     cells = [f'<td class="dt">{d[5:]}</td>']
     for a in active_amts:
         n = comp_by_date[d].get(a,0)
@@ -486,6 +487,7 @@ for d in DATES:
         f'<td class="n total-r">₹{tr:,.0f}</td>',
         f'<td class="n aov">₹{aov:,}</td>',
         f'<td class="{"att1-hi" if a1t and a1c/a1t>=0.04 else "att1-med" if a1t and a1c/a1t>=0.025 else "att1-lo"}">{a1pct}</td>',
+        f'<td class="{"att1-hi" if a1t and tc/a1t>=0.05 else "att1-med" if a1t and tc/a1t>=0.035 else "att1-lo"}">{totpct}</td>',
     ]
     tbl_rows.append(f"<tr>{''.join(cells)}</tr>")
 
@@ -496,7 +498,7 @@ p1_table = f"""
     <thead><tr>
       <th class="dt-hdr">Date</th>
       {amt_headers}
-      <th>Total #</th><th>Total Revenue</th><th>AOV</th><th>att1 Conv%</th>
+      <th>Total #</th><th>Total Revenue</th><th>AOV</th><th>att1 Conv%</th><th>Total Conv%</th>
     </tr></thead>
     <tbody>{"".join(tbl_rows)}</tbody>
   </table>
@@ -1674,6 +1676,6 @@ with open(out, "w") as f:
 total_rev_all = sum(total_rev_d[d] for d in DATES)
 print(f"→ {out}")
 print(f"  Daily chart : {len(DATES)} dates, {len(p1_datasets)} amount buckets")
-print(f"  Panel 1 tbl : {len(tbl_rows)} rows × {len(active_amts)+4} columns")
+print(f"  Panel 1 tbl : {len(tbl_rows)} rows × {len(active_amts)+5} columns")
 print(f"  Panel 3     : 3 buckets (Completed / Insuff Funds / Cancellations)")
 print(f"  Total rev   : ₹{total_rev_all:,.0f}  |  Repeat rev: ₹{total_rep:,.0f}")
